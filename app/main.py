@@ -1,15 +1,14 @@
 """
-Aplicação principal FastAPI do AutoU Email Classifier
+Aplicação principal FastAPI
 """
 
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 import time
-import os
 
 from .controllers.email_controller import router
-from .models.email_models import ErrorResponse
+from .models.email_models import ErrorResponse, HealthResponse
 from .utils.config import settings
 
 # Criar aplicação FastAPI
@@ -20,7 +19,7 @@ app = FastAPI(
     debug=settings.debug
 )
 
-# Configurar CORS
+# CORS para permitir requisições do frontend
 app.add_middleware(
     CORSMiddleware,
     allow_origins=settings.cors_origins,
@@ -29,55 +28,35 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-
-# Middleware para logging de requisições
-@app.middleware("http")
-async def log_requests(request: Request, call_next):
-    """Middleware para logging de requisições"""
-    start_time = time.time()
-    
-    response = await call_next(request)
-    
-    process_time = time.time() - start_time
-    print(f"{request.method} {request.url} - {response.status_code} - {process_time:.3f}s")
-    
-    return response
-
-
 # Incluir rotas
 app.include_router(router)
 
+# Middleware para log de requisições e tratamento de erros
+@app.middleware("http")
+async def add_process_time_header(request: Request, call_next):
+    start_time = time.time()
+    try:
+        response = await call_next(request)
+        process_time = time.time() - start_time
+        response.headers["X-Process-Time"] = str(round(process_time, 3))
+        return response
+    except Exception as e:
+        # Log do erro
+        print(f"Erro na requisição: {request.url} - {str(e)}")
+        return JSONResponse(
+            status_code=500,
+            content=ErrorResponse(
+                message="Erro interno do servidor. Tente novamente.",
+                details=str(e) if settings.debug else None
+            ).model_dump()
+        )
 
-# Handler de erros global
-@app.exception_handler(Exception)
-async def general_exception_handler(request: Request, exc: Exception):
-    """Handler para erros gerais"""
-    print(f"Erro não tratado: {str(exc)}")
-    return JSONResponse(
-        status_code=500,
-        content=ErrorResponse.create(
-            error="Erro interno do servidor",
-            detail="Ocorreu um erro inesperado. Tente novamente."
-        ).dict()
-    )
-
-
-# Executar aplicação
-if __name__ == "__main__":
-    import uvicorn
-    
-    # Verificar se a API key está configurada
+@app.get("/health", response_model=HealthResponse, summary="Health Check")
+async def health_check_root():
+    """Health check da API"""
+    # Verificar se a API key do OpenAI está configurada
     if not settings.openai_api_key:
-        print("⚠️  AVISO: OPENAI_API_KEY não encontrada nas variáveis de ambiente")
-        print("   Crie um arquivo .env com: OPENAI_API_KEY=sua_chave_aqui")
-        print("   A aplicação funcionará com classificação por palavras-chave como fallback")
-    
-    print("🚀 Iniciando AutoU Email Classifier API...")
-    print("📖 Documentação disponível em: http://localhost:8000/docs")
-    print("🔍 Health check em: http://localhost:8000/health")
-    
-    uvicorn.run(
-        app,
-        host="0.0.0.0",
-        port=8000
-    )
+        return HealthResponse.create_warning(
+            "API configurada, mas OPENAI_API_KEY não encontrada"
+        )
+    return HealthResponse.create_healthy()

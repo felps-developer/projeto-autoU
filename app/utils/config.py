@@ -18,8 +18,6 @@ class Settings(BaseSettings):
     # OpenAI Settings
     openai_api_key: Optional[str] = None
     openai_model: str = "gpt-3.5-turbo"
-    openai_max_tokens: int = 100
-    openai_temperature: float = 0.1
     
     # File Processing Settings
     max_file_size: int = 10 * 1024 * 1024  # 10MB
