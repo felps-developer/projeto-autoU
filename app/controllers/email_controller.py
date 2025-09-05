@@ -2,8 +2,7 @@
 Controller para endpoints de email
 """
 
-from fastapi import APIRouter, UploadFile, File, Form, HTTPException, status
-import time
+from fastapi import APIRouter, UploadFile, File, Form
 
 from ..models.email_models import (
     EmailResponse, 
@@ -11,16 +10,14 @@ from ..models.email_models import (
     CategoriesResponse,
     CategoryInfo
 )
-from ..services.email_classifier import EmailClassifier
-from ..services.file_processor import FileProcessor
+from ..services.email_service import EmailService
 from ..utils.config import settings
 
 # Criar router
 router = APIRouter()
 
-# Instâncias dos serviços
-email_classifier = EmailClassifier()
-file_processor = FileProcessor()
+# Instância do service
+email_service = EmailService()
 
 
 @router.get("/", response_model=HealthResponse)
@@ -88,93 +85,7 @@ async def classify_email_endpoint(
     - Tempo de processamento
     - Tamanho do texto processado
     """
-    start_time = time.time()
-    
-    try:
-        # Validar entrada
-        if not text and not file:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail="É necessário fornecer texto ou arquivo"
-            )
-        
-        # Processar entrada
-        if file:
-            # Validar nome do arquivo
-            if not file.filename:
-                raise HTTPException(
-                    status_code=status.HTTP_400_BAD_REQUEST,
-                    detail="Nome do arquivo é obrigatório"
-                )
-            
-            # Validar extensão
-            if not file_processor.validate_file_extension(file.filename):
-                raise HTTPException(
-                    status_code=status.HTTP_400_BAD_REQUEST,
-                    detail=f"Formato não suportado. Use: {', '.join(settings.allowed_extensions)}"
-                )
-            
-            # Ler conteúdo do arquivo
-            file_content = await file.read()
-            
-            # Validar tamanho
-            if not file_processor.validate_file_size(file_content):
-                raise HTTPException(
-                    status_code=status.HTTP_413_REQUEST_ENTITY_TOO_LARGE,
-                    detail=f"Arquivo muito grande. Máximo permitido: {settings.max_file_size // (1024*1024)}MB"
-                )
-            
-            # Processar arquivo
-            email_text = file_processor.process_file_content(file_content, file.filename)
-            
-        else:
-            # Usar texto direto
-            if not text.strip():
-                raise HTTPException(
-                    status_code=status.HTTP_400_BAD_REQUEST,
-                    detail="Texto não pode estar vazio"
-                )
-            email_text = text.strip()
-        
-        # Verificar se o texto não está muito curto
-        if len(email_text) < 10:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Texto muito curto. Mínimo de 10 caracteres"
-            )
-        
-        # Classificar email e gerar resposta
-        category, suggested_response = email_classifier.classify_and_generate_response(email_text)
-        
-        # Calcular tempo de processamento
-        processing_time = time.time() - start_time
-        
-        # Retornar resposta
-        return EmailResponse(
-            category=category,
-            suggested_response=suggested_response,
-            processing_time=round(processing_time, 3),
-            text_length=len(email_text)
-        )
-    
-    except HTTPException:
-        # Re-raise HTTP exceptions
-        raise
-    
-    except ValueError as e:
-        # Erros de validação
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=str(e)
-        )
-    
-    except Exception as e:
-        # Erros internos
-        print(f"Erro interno: {str(e)}")
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Erro interno do servidor. Tente novamente."
-        )
+    return await email_service.process_email_classification(text=text, file=file)
 
 
 @router.post("/classify-text", response_model=EmailResponse)
@@ -188,40 +99,4 @@ async def classify_text_only(text: str = Form(...)):
     Returns:
         EmailResponse: Resultado da classificação
     """
-    start_time = time.time()
-    
-    try:
-        if not text.strip():
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Texto não pode estar vazio"
-            )
-        
-        if len(text.strip()) < 10:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Texto muito curto. Mínimo de 10 caracteres"
-            )
-        
-        # Classificar email e gerar resposta
-        category, suggested_response = email_classifier.classify_and_generate_response(text.strip())
-        
-        # Calcular tempo de processamento
-        processing_time = time.time() - start_time
-        
-        return EmailResponse(
-            category=category,
-            suggested_response=suggested_response,
-            processing_time=round(processing_time, 3),
-            text_length=len(text.strip())
-        )
-    
-    except HTTPException:
-        raise
-    
-    except Exception as e:
-        print(f"Erro interno: {str(e)}")
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Erro interno do servidor. Tente novamente."
-        )
+    return await email_service.process_email_classification(text=text)
