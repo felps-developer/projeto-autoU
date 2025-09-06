@@ -111,19 +111,60 @@ projeto-autoU-backend/
 └── README.md             # Este arquivo
 ```
 
-## 🚀 Deploy
+## 🚀 Deploy na Nuvem
 
-### Heroku
+### Opções Gratuitas Recomendadas
 
-1. Conectar repositório GitHub
-2. Configurar variáveis de ambiente
-3. Deploy automático
+#### 1. Render (Recomendado) ⭐
 
-### Render
+**Vantagens:**
+- ✅ Plano gratuito generoso
+- ✅ Deploy automático via GitHub
+- ✅ SSL automático
+- ✅ Fácil configuração
 
-1. Conectar repositório
-2. Configurar variáveis
-3. Deploy automático
+**Passos:**
+1. Acesse [render.com](https://render.com) e faça login
+2. Clique em "New +" → "Web Service"
+3. Conecte seu repositório GitHub
+4. Configure:
+   - **Name**: `autou-email-classifier`
+   - **Environment**: `Python 3`
+   - **Build Command**: `pip install -r requirements.txt`
+   - **Start Command**: `uvicorn main:app --host 0.0.0.0 --port $PORT --workers 1`
+5. Adicione a variável de ambiente:
+   - **Key**: `OPENAI_API_KEY`
+   - **Value**: `sua-api-key-aqui`
+6. Clique em "Create Web Service"
+
+#### 2. Railway
+
+**Vantagens:**
+- ✅ Interface moderna
+- ✅ Deploy automático
+- ✅ Suporte nativo ao Python
+
+**Passos:**
+1. Acesse [railway.app](https://railway.app) e faça login
+2. Clique em "New Project" → "Deploy from GitHub repo"
+3. Selecione seu repositório
+4. Adicione a variável de ambiente `OPENAI_API_KEY`
+5. Deploy automático
+
+### Configuração da API Key
+
+1. Acesse [OpenAI Platform](https://platform.openai.com/api-keys)
+2. Crie uma nova API key
+3. Configure a variável de ambiente `OPENAI_API_KEY` na plataforma escolhida
+
+### Verificação do Deploy
+
+Após o deploy, teste:
+- **Frontend**: `https://sua-app.onrender.com/`
+- **API Health**: `https://sua-app.onrender.com/health`
+- **Documentação**: `https://sua-app.onrender.com/docs`
+
+📖 **Guia Completo**: Veja [DEPLOY.md](DEPLOY.md) para instruções detalhadas
 
 ## 🧪 Testes
 

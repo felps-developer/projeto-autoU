@@ -5,7 +5,10 @@ Aplicação principal FastAPI
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
 import time
+import os
 
 from .controllers.email_controller import router
 from .models.email_models import ErrorResponse, HealthResponse
@@ -30,6 +33,20 @@ app.add_middleware(
 
 # Incluir rotas
 app.include_router(router)
+
+# Servir arquivos estáticos (frontend)
+frontend_path = os.path.join(os.path.dirname(__file__), "..", "frontend")
+if os.path.exists(frontend_path):
+    app.mount("/static", StaticFiles(directory=frontend_path), name="static")
+
+# Rota para servir o frontend
+@app.get("/", include_in_schema=False)
+async def serve_frontend():
+    """Serve o frontend da aplicação"""
+    frontend_file = os.path.join(os.path.dirname(__file__), "..", "frontend", "index.html")
+    if os.path.exists(frontend_file):
+        return FileResponse(frontend_file)
+    return {"message": "Frontend não encontrado"}
 
 # Middleware para log de requisições e tratamento de erros
 @app.middleware("http")
