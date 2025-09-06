@@ -160,13 +160,26 @@ projeto-autoU-backend/
 ### Verificação do Deploy
 
 Após o deploy, teste:
-- **Frontend**: `https://sua-app.onrender.com/`
-- **API Health**: `https://sua-app.onrender.com/health`
-- **Documentação**: `https://sua-app.onrender.com/docs`
+- **Frontend**: `https://projeto-autou-1jup.onrender.com/`
+- **API Health**: `https://projeto-autou-1jup.onrender.com/health`
+- **Documentação**: `https://projeto-autou-1jup.onrender.com/docs`
 
-📖 **Guia Completo**: Veja [DEPLOY.md](DEPLOY.md) para instruções detalhadas
+### 🎉 Aplicação Deployada
+
+**URL da Aplicação**: [https://projeto-autou-1jup.onrender.com/](https://projeto-autou-1jup.onrender.com/)
+
+**Status**: ✅ Funcionando perfeitamente!
+
+**Funcionalidades disponíveis**:
+- ✅ Interface web responsiva
+- ✅ Upload de arquivos (.txt, .pdf)
+- ✅ Classificação de emails com IA
+- ✅ Geração de respostas automáticas
+- ✅ API REST completa
 
 ## 🧪 Testes
+
+### Teste Local
 
 ```bash
 # Executar testes
@@ -176,9 +189,49 @@ python tests/test_examples.py
 python clean.py
 ```
 
+### Teste da Aplicação Deployada
+
+**1. Acesse a aplicação**: [https://projeto-autou-1jup.onrender.com/](https://projeto-autou-1jup.onrender.com/)
+
+**2. Teste com email de exemplo**:
+```
+Assunto: Solicitação de suporte técnico
+
+Olá equipe,
+
+Estou enfrentando problemas para acessar minha conta no sistema. 
+Podem me ajudar a resolver isso?
+
+Obrigado,
+João Silva
+```
+
+**3. Verifique os resultados**:
+- ✅ Categoria: "Produtivo" ou "Improdutivo"
+- ✅ Resposta sugerida pela IA
+- ✅ Tempo de processamento
+- ✅ Tamanho do texto
+
+**4. Teste via API**:
+```bash
+curl -X POST "https://projeto-autou-1jup.onrender.com/classify-text" \
+  -F "text=Preciso de ajuda com minha conta"
+```
+
 ## 📄 Documentação
 
-Acesse `http://localhost:8000/docs` para documentação interativa da API.
+### Documentação Interativa da API
+
+- **Local**: `http://localhost:8000/docs`
+- **Produção**: [https://projeto-autou-1jup.onrender.com/docs](https://projeto-autou-1jup.onrender.com/docs)
+
+### Endpoints Disponíveis
+
+- `GET /` - Interface web principal
+- `GET /health` - Health check da API
+- `GET /categories` - Categorias disponíveis
+- `POST /classify-email` - Classificação de email (arquivo + texto)
+- `POST /classify-text` - Classificação apenas de texto
 
 ---
 
