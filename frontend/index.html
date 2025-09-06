@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AutoU Email Classifier</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .form-section {
+            margin-bottom: 40px;
+        }
+
+        .form-section h2 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #555;
+        }
+
+        .input-group input[type="file"] {
+            width: 100%;
+            padding: 12px;
+            border: 2px dashed #ddd;
+            border-radius: 8px;
+            background: #f9f9f9;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .input-group input[type="file"]:hover {
+            border-color: #4facfe;
+            background: #f0f8ff;
+        }
+
+        .input-group textarea {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 14px;
+            resize: vertical;
+            min-height: 120px;
+            transition: border-color 0.3s ease;
+        }
+
+        .input-group textarea:focus {
+            outline: none;
+            border-color: #4facfe;
+        }
+
+        .divider {
+            text-align: center;
+            margin: 30px 0;
+        }
+
+        .divider span {
+            color: #666;
+            font-weight: 600;
+            font-size: 18px;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(79, 172, 254, 0.3);
+        }
+
+        .btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #4facfe;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 10px;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        .results {
+            display: none;
+            margin-top: 30px;
+            padding: 25px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            border-left: 5px solid #4facfe;
+        }
+
+        .result-item {
+            margin-bottom: 20px;
+        }
+
+        .result-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .result-label {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .result-value {
+            padding: 12px;
+            background: white;
+            border-radius: 6px;
+            border: 1px solid #e0e0e0;
+        }
+
+        .category-produtivo {
+            color: #28a745;
+            font-weight: 600;
+        }
+
+        .category-improdutivo {
+            color: #ffc107;
+            font-weight: 600;
+        }
+
+        .error {
+            display: none;
+            background: #f8d7da;
+            color: #721c24;
+            padding: 15px;
+            border-radius: 6px;
+            margin-top: 20px;
+            border: 1px solid #f5c6cb;
+        }
+
+        .file-info {
+            margin-top: 10px;
+            padding: 10px;
+            background: #e9ecef;
+            border-radius: 6px;
+            font-size: 14px;
+            color: #666;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                margin: 10px;
+                border-radius: 10px;
+            }
+
+            .header {
+                padding: 20px;
+            }
+
+            .header h1 {
+                font-size: 2em;
+            }
+
+            .content {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚀 AutoU Email Classifier</h1>
+            <p>Classificação automática de emails com IA</p>
+        </div>
+
+        <div class="content">
+            <div class="form-section">
+                <h2>📧 Enviar Email para Classificação</h2>
+
+                <form id="emailForm">
+                    <div class="input-group">
+                        <label for="fileInput">📁 Upload de Arquivo (.txt ou .pdf)</label>
+                        <input type="file" id="fileInput" accept=".txt,.pdf">
+                        <div id="fileInfo" class="file-info" style="display: none;"></div>
+                    </div>
+
+                    <div class="divider">
+                        <span>OU</span>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="textInput">✍️ Digite o texto do email</label>
+                        <textarea id="textInput" placeholder="Cole ou digite o conteúdo do email aqui..."></textarea>
+                    </div>
+
+                    <button type="submit" class="btn" id="submitBtn">
+                        🔍 Classificar Email
+                    </button>
+                </form>
+
+                <div class="loading" id="loading">
+                    <div class="spinner"></div>
+                    <p>Processando email...</p>
+                </div>
+
+                <div class="error" id="error"></div>
+
+                <div class="results" id="results">
+                    <h3>📊 Resultados da Classificação</h3>
+
+                    <div class="result-item">
+                        <div class="result-label">Categoria:</div>
+                        <div class="result-value">
+                            <span id="category" class="category-produtivo"></span>
+                        </div>
+                    </div>
+
+                    <div class="result-item">
+                        <div class="result-label">Resposta Sugerida:</div>
+                        <div class="result-value" id="suggestedResponse"></div>
+                    </div>
+
+                    <div class="result-item">
+                        <div class="result-label">Tempo de Processamento:</div>
+                        <div class="result-value" id="processingTime"></div>
+                    </div>
+
+                    <div class="result-item">
+                        <div class="result-label">Tamanho do Texto:</div>
+                        <div class="result-value" id="textLength"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE_URL = 'http://localhost:8000';
+
+        const form = document.getElementById('emailForm');
+        const fileInput = document.getElementById('fileInput');
+        const textInput = document.getElementById('textInput');
+        const submitBtn = document.getElementById('submitBtn');
+        const loading = document.getElementById('loading');
+        const results = document.getElementById('results');
+        const error = document.getElementById('error');
+        const fileInfo = document.getElementById('fileInfo');
+
+        // Mostrar informações do arquivo selecionado
+        fileInput.addEventListener('change', function (e) {
+            const file = e.target.files[0];
+            if (file) {
+                fileInfo.innerHTML = `
+                    <strong>Arquivo selecionado:</strong> ${file.name}<br>
+                    <strong>Tamanho:</strong> ${(file.size / 1024).toFixed(2)} KB<br>
+                    <strong>Tipo:</strong> ${file.type || 'Não especificado'}
+                `;
+                fileInfo.style.display = 'block';
+            } else {
+                fileInfo.style.display = 'none';
+            }
+        });
+
+        // Submissão do formulário
+        form.addEventListener('submit', async function (e) {
+            e.preventDefault();
+
+            const file = fileInput.files[0];
+            const text = textInput.value.trim();
+
+            // Validação
+            if (!file && !text) {
+                showError('Por favor, selecione um arquivo ou digite o texto do email.');
+                return;
+            }
+
+            if (text && text.length < 10) {
+                showError('O texto deve ter pelo menos 10 caracteres.');
+                return;
+            }
+
+            // Mostrar loading
+            showLoading();
+            hideError();
+            hideResults();
+
+            try {
+                const formData = new FormData();
+
+                if (file) {
+                    formData.append('file', file);
+                }
+
+                if (text) {
+                    formData.append('text', text);
+                }
+
+                const response = await fetch(`${API_BASE_URL}/classify-email`, {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.detail || 'Erro na classificação');
+                }
+
+                const data = await response.json();
+                showResults(data);
+
+            } catch (err) {
+                showError(`Erro: ${err.message}`);
+            } finally {
+                hideLoading();
+            }
+        });
+
+        function showLoading() {
+            loading.style.display = 'block';
+            submitBtn.disabled = true;
+            submitBtn.textContent = '⏳ Processando...';
+        }
+
+        function hideLoading() {
+            loading.style.display = 'none';
+            submitBtn.disabled = false;
+            submitBtn.textContent = '🔍 Classificar Email';
+        }
+
+        function showError(message) {
+            error.textContent = message;
+            error.style.display = 'block';
+        }
+
+        function hideError() {
+            error.style.display = 'none';
+        }
+
+        function showResults(data) {
+            const category = document.getElementById('category');
+            const suggestedResponse = document.getElementById('suggestedResponse');
+            const processingTime = document.getElementById('processingTime');
+            const textLength = document.getElementById('textLength');
+
+            // Categoria
+            category.textContent = data.category;
+            category.className = data.category === 'produtivo' ? 'category-produtivo' : 'category-improdutivo';
+
+            // Resposta sugerida
+            suggestedResponse.textContent = data.suggested_response;
+
+            // Tempo de processamento
+            processingTime.textContent = `${data.processing_time}s`;
+
+            // Tamanho do texto
+            textLength.textContent = `${data.text_length} caracteres`;
+
+            results.style.display = 'block';
+        }
+
+        function hideResults() {
+            results.style.display = 'none';
+        }
+
+        // Limpar formulário quando arquivo é selecionado
+        fileInput.addEventListener('change', function () {
+            if (this.files.length > 0) {
+                textInput.value = '';
+            }
+        });
+
+        // Limpar arquivo quando texto é digitado
+        textInput.addEventListener('input', function () {
+            if (this.value.trim().length > 0) {
+                fileInput.value = '';
+                fileInfo.style.display = 'none';
+            }
+        });
+    </script>
+</body>
+
+</html>

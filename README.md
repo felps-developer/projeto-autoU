@@ -30,10 +30,33 @@ OPENAI_API_KEY=sua_chave_aqui
 ### 3. Executar aplicação
 
 ```bash
+# Iniciar API
 python main.py
+
+# Em outro terminal, iniciar frontend
+cd frontend
+python -m http.server 8001
 ```
 
-A API estará disponível em: `http://localhost:8000`
+- **API**: `http://localhost:8000`
+- **Frontend**: `http://localhost:8001`
+
+## 🌐 Interface Web
+
+### Acessar a Interface
+
+1. Inicie a API: `python main.py`
+2. Inicie o frontend: `cd frontend && python -m http.server 8001`
+3. Acesse: `http://localhost:8001`
+
+### Funcionalidades da Interface
+
+- ✅ **Upload de arquivos** (.txt, .pdf)
+- ✅ **Inserção direta de texto**
+- ✅ **Classificação automática**
+- ✅ **Exibição de resultados**
+- ✅ **Interface responsiva**
+- ✅ **Validação de entrada**
 
 ## 📖 Uso da API
 
@@ -78,6 +101,10 @@ projeto-autoU-backend/
 │   ├── services/          # Services (lógica)
 │   ├── models/            # Models (dados)
 │   └── utils/             # Utils (configurações)
+├── frontend/              # Interface web
+│   ├── index.html         # Interface principal
+│   ├── exemplo_email.txt  # Arquivo de exemplo
+│   └── README.md          # Documentação do frontend
 ├── tests/                 # Testes
 ├── requirements.txt       # Dependências
 ├── env.example           # Exemplo de configuração
