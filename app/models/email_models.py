@@ -3,7 +3,7 @@ Modelos de dados para emails
 """
 
 from pydantic import BaseModel
-from typing import Optional
+from typing import Optional, List
 from enum import Enum
 import time
 
@@ -69,9 +69,9 @@ class CategoryInfo(BaseModel):
     """Informações sobre uma categoria"""
     name: str
     description: str
-    examples: list[str]
+    examples: List[str]
 
 
 class CategoriesResponse(BaseModel):
     """Resposta com categorias disponíveis"""
-    categories: list[CategoryInfo]
+    categories: List[CategoryInfo]

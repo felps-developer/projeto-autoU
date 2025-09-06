@@ -3,32 +3,28 @@ Configurações da aplicação
 """
 
 import os
-from typing import Optional
-from pydantic_settings import BaseSettings
+from typing import Optional, List
 
 
-class Settings(BaseSettings):
+class Settings:
     """Configurações da aplicação"""
     
-    # API Settings
-    app_name: str = "AutoU Email Classifier"
-    app_version: str = "1.0.0"
-    debug: bool = False
-    
-    # OpenAI Settings
-    openai_api_key: Optional[str] = None
-    openai_model: str = "gpt-3.5-turbo"
-    
-    # File Processing Settings
-    max_file_size: int = 10 * 1024 * 1024  # 10MB
-    allowed_extensions: list = [".txt", ".pdf"]
-    
-    # CORS Settings
-    cors_origins: list = ["*"]
-    
-    class Config:
-        env_file = ".env"
-        case_sensitive = False
+    def __init__(self):
+        # API Settings
+        self.app_name: str = "AutoU Email Classifier"
+        self.app_version: str = "1.0.0"
+        self.debug: bool = False
+        
+        # OpenAI Settings
+        self.openai_api_key: Optional[str] = os.getenv("OPENAI_API_KEY")
+        self.openai_model: str = os.getenv("OPENAI_MODEL", "gpt-3.5-turbo")
+        
+        # File Processing Settings
+        self.max_file_size: int = 10 * 1024 * 1024  # 10MB
+        self.allowed_extensions: List[str] = [".txt", ".pdf"]
+        
+        # CORS Settings
+        self.cors_origins: List[str] = ["*"]
 
 
 # Instância global das configurações
