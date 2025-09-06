@@ -111,66 +111,14 @@ projeto-autoU-backend/
 └── README.md             # Este arquivo
 ```
 
-## 🚀 Deploy na Nuvem
-
-### Opções Gratuitas Recomendadas
-
-#### 1. Render (Recomendado) ⭐
-
-**Vantagens:**
-- ✅ Plano gratuito generoso
-- ✅ Deploy automático via GitHub
-- ✅ SSL automático
-- ✅ Fácil configuração
-
-**Passos:**
-1. Acesse [render.com](https://render.com) e faça login
-2. Clique em "New +" → "Web Service"
-3. Conecte seu repositório GitHub
-4. Configure:
-   - **Name**: `autou-email-classifier`
-   - **Environment**: `Python 3`
-   - **Build Command**: `pip install -r requirements.txt`
-   - **Start Command**: `uvicorn main:app --host 0.0.0.0 --port $PORT --workers 1`
-5. Adicione a variável de ambiente:
-   - **Key**: `OPENAI_API_KEY`
-   - **Value**: `sua-api-key-aqui`
-6. Clique em "Create Web Service"
-
-#### 2. Railway
-
-**Vantagens:**
-- ✅ Interface moderna
-- ✅ Deploy automático
-- ✅ Suporte nativo ao Python
-
-**Passos:**
-1. Acesse [railway.app](https://railway.app) e faça login
-2. Clique em "New Project" → "Deploy from GitHub repo"
-3. Selecione seu repositório
-4. Adicione a variável de ambiente `OPENAI_API_KEY`
-5. Deploy automático
-
 ### Configuração da API Key
 
 1. Acesse [OpenAI Platform](https://platform.openai.com/api-keys)
 2. Crie uma nova API key
 3. Configure a variável de ambiente `OPENAI_API_KEY` na plataforma escolhida
 
-### Verificação do Deploy
-
-Após o deploy, teste:
-- **Frontend**: `https://projeto-autou-1jup.onrender.com/`
-- **API Health**: `https://projeto-autou-1jup.onrender.com/health`
-- **Documentação**: `https://projeto-autou-1jup.onrender.com/docs`
-
-### 🎉 Aplicação Deployada
-
-**URL da Aplicação**: [https://projeto-autou-1jup.onrender.com/](https://projeto-autou-1jup.onrender.com/)
-
-**Status**: ✅ Funcionando perfeitamente!
-
 **Funcionalidades disponíveis**:
+
 - ✅ Interface web responsiva
 - ✅ Upload de arquivos (.txt, .pdf)
 - ✅ Classificação de emails com IA
@@ -194,12 +142,13 @@ python clean.py
 **1. Acesse a aplicação**: [https://projeto-autou-1jup.onrender.com/](https://projeto-autou-1jup.onrender.com/)
 
 **2. Teste com email de exemplo**:
+
 ```
 Assunto: Solicitação de suporte técnico
 
 Olá equipe,
 
-Estou enfrentando problemas para acessar minha conta no sistema. 
+Estou enfrentando problemas para acessar minha conta no sistema.
 Podem me ajudar a resolver isso?
 
 Obrigado,
@@ -207,12 +156,14 @@ João Silva
 ```
 
 **3. Verifique os resultados**:
+
 - ✅ Categoria: "Produtivo" ou "Improdutivo"
 - ✅ Resposta sugerida pela IA
 - ✅ Tempo de processamento
 - ✅ Tamanho do texto
 
 **4. Teste via API**:
+
 ```bash
 curl -X POST "https://projeto-autou-1jup.onrender.com/classify-text" \
   -F "text=Preciso de ajuda com minha conta"
@@ -223,16 +174,10 @@ curl -X POST "https://projeto-autou-1jup.onrender.com/classify-text" \
 ### Documentação Interativa da API
 
 - **Local**: `http://localhost:8000/docs`
-- **Produção**: [https://projeto-autou-1jup.onrender.com/docs](https://projeto-autou-1jup.onrender.com/docs)
+- **Produção**: [https://projeto-autou-1jup.onrender.com/docs]
 
-### Endpoints Disponíveis
+## 📄 Site do sistema
 
-- `GET /` - Interface web principal
-- `GET /health` - Health check da API
-- `GET /categories` - Categorias disponíveis
-- `POST /classify-email` - Classificação de email (arquivo + texto)
-- `POST /classify-text` - Classificação apenas de texto
+(https://projeto-autou-1jup.onrender.com/static/index.html)
 
 ---
-
-**Desenvolvido para o Case Prático AutoU** 🚀
