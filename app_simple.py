@@ -1,5 +1,5 @@
 """
-Versão simplificada da aplicação para deploy no Render
+Aplicação principal AutoU Email Classifier - Versão para Deploy
 """
 
 from fastapi import FastAPI, Request, File, UploadFile, Form
